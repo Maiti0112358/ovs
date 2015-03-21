@@ -65,6 +65,7 @@
     OFPACT(SET_FIELD,       ofpact_set_field,   ofpact, "set_field")    \
     OFPACT(SET_VLAN_VID,    ofpact_vlan_vid,    ofpact, "set_vlan_vid") \
     OFPACT(SET_VLAN_PCP,    ofpact_vlan_pcp,    ofpact, "set_vlan_pcp") \
+    OFPACT(PMOD_VLAN_VID,   ofpact_pmod_vlan_vid, ofpact, "pmod_vlan_vid") \  /*EM190315*/
     OFPACT(STRIP_VLAN,      ofpact_null,        ofpact, "strip_vlan")   \
     OFPACT(PUSH_VLAN,       ofpact_null,        ofpact, "push_vlan")    \
     OFPACT(SET_ETH_SRC,     ofpact_mac,         ofpact, "mod_dl_src")   \
@@ -313,6 +314,22 @@ struct ofpact_vlan_vid {
 struct ofpact_vlan_pcp {
     struct ofpact ofpact;
     uint8_t vlan_pcp;           /* VLAN PCP in low 3 bits, 0 in other bits. */
+    bool push_vlan_if_needed;   /* OF 1.0 semantics if true. */
+    bool flow_has_vlan;         /* VLAN present at action validation time? */
+};
+
+/* OFPACT_PMOD_VLAN_VID.
+ *
+ * We keep track if vlan was present at action validation time to avoid a
+ * PUSH_VLAN when translating to OpenFlow 1.1+.
+ *
+ * We also keep the originating OFPUTIL action code in ofpact.compat.
+ *
+ * Used for OFPAT10_PMOD_VLAN_VID and OFPAT11_PMOD_VLAN_VID. */
+struct ofpact_pmod_vlan_vid {
+    struct ofpact ofpact;
+    unint4_t vlan_prio
+    uint12_t vlan_vid;          /* VLAN VID in low 12 bits, 0 in other bits. */
     bool push_vlan_if_needed;   /* OF 1.0 semantics if true. */
     bool flow_has_vlan;         /* VLAN present at action validation time? */
 };
